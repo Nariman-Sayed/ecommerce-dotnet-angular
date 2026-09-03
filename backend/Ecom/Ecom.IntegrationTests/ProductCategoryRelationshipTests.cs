@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+using Microsoft.Data.Sqlite;
 
 namespace Ecom.IntegrationTests;
 
@@ -9,7 +9,7 @@ public class ProductCategoryRelationshipTests : IDisposable
 
     public ProductCategoryRelationshipTests()
     {
-        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=True");
         _connection.Open();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -31,7 +31,7 @@ public class ProductCategoryRelationshipTests : IDisposable
         {
             Name = "Laptop",
             Description = "Test laptop",
-            Price = 999,
+            NewPrice = 999,
             CategoryId = category.Id
         };
         _context.Products.Add(product);
@@ -48,16 +48,25 @@ public class ProductCategoryRelationshipTests : IDisposable
     public async Task DeletingProduct_CascadesDeleteToPhotos()
     {
         var category = new Category { Name = "Books", Description = "Reading" };
-        var product = new Product { Name = "Novel", Description = "Test", Price = 50, Category = category };
+        var product = new Product { Name = "Novel", Description = "Test", NewPrice = 50, Category = category };
         product.Photos.Add(new Photo { ImageName = "cover.jpg" });
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 
-        _context.Products.Remove(product);
+        var productId = product.Id;
+
+        var fetchedProduct = await _context.Products
+            .Include(p => p.Photos)
+            .FirstAsync(p => p.Id == productId);
+
+        _context.Products.Remove(fetchedProduct);
         await _context.SaveChangesAsync();
 
-        var remainingPhotos = await _context.Photos.CountAsync();
-        Assert.Equal(0, remainingPhotos);
+        var remainingPhotosForProduct = await _context.Photos
+            .Where(p => p.ProductId == productId)
+            .CountAsync();
+
+        Assert.Equal(0, remainingPhotosForProduct);
     }
 
     public void Dispose()

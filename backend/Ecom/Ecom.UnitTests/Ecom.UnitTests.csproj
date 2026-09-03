@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ecom.Core\Ecom.Core.csproj" />
+    <ProjectReference Include="..\Ecom.infrastructure\Ecom.infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

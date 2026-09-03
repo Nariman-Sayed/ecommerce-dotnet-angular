@@ -1,4 +1,4 @@
-﻿namespace Ecom.Core.Entities.Product;
+namespace Ecom.Core.Entities.Product;
 
 public class Category : BaseEntity<int>
 {

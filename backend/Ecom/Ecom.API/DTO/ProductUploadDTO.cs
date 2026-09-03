@@ -1,12 +1,17 @@
-namespace Ecom.Core.Entities.Product;
+using Microsoft.AspNetCore.Http;
 
-public class Product : BaseEntity<int>
+namespace Ecom.API.DTO;
+
+public record AddProductDTO
 {
     public required string Name { get; set; }
     public required string Description { get; set; }
     public decimal OldPrice { get; set; }
     public decimal NewPrice { get; set; }
-    public List<Photo> Photos { get; set; } = new();
     public int CategoryId { get; set; }
-    public Category Category { get; set; } = null!;
+    public required IFormFileCollection Photo { get; set; }
+}
+
+public record UpdateProductDTO : AddProductDTO
+{
 }
