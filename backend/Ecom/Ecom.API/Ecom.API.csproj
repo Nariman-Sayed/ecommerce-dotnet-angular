@@ -4,9 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>NU1903</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+  <!-- KNOWN ISSUE: AutoMapper 12.0.1 has a known high-severity DoS vulnerability
+     (GHSA-rvv3-g6hj-g44x) via uncontrolled recursion on deeply nested object
+     graphs (25,000+ levels). Not upgrading because: (1) the fix ships only in
+     15.1.1+, which requires a paid commercial license since AutoMapper's
+     licensing change in v13 (July 2025), and (2) current DTOs (CategoryDTO,
+     UpdateCategoryDTO) are flat with no nested/circular references, so the
+     attack vector does not apply here. Will migrate to Mapperly (free,
+     source-generator based) if DTOs grow more complex or as a dedicated
+     refactor. -->
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />

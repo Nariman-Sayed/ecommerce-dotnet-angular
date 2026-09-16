@@ -2,8 +2,7 @@
 using Ecom.Core.DTO;
 using Ecom.Core.Entities.Product;
 
-namespace Ecom.API.Mapping
-{
+namespace Ecom.API.Mapping;
     public class CategoryMapping : Profile
     {
         public CategoryMapping()
@@ -12,4 +11,3 @@ namespace Ecom.API.Mapping
             CreateMap<UpdateCategoryDTO, Category>().ReverseMap();
         }
     }
-}
