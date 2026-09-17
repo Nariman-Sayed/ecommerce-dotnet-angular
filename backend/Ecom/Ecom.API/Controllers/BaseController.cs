@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Ecom.infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +6,7 @@ namespace Ecom.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BaseController : ControllerBase
+public abstract class BaseController : ControllerBase
 {
     protected readonly AppDbContext context;
     protected readonly IMapper mapper;
