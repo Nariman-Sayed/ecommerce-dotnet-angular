@@ -42,10 +42,10 @@ public class ProductCategoryRelationshipTests : IDisposable
     public async Task DeletingProduct_CascadesDeleteToPhotos()
     {
         var category = new Category("Books", "Reading");
-        var product = new Product("Novel", "Test", 0, 60, 50)
-        {
-            Category = category
-        };
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        var product = new Product("Novel", "Test", category.Id, 60, 50);
         product.Photos.Add(new Photo { ImageName = "cover.jpg" });
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
