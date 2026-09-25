@@ -1,0 +1,1 @@
+global using Ecom.Core.Entities.Product;

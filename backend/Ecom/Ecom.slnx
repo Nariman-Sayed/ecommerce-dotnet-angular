@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="Ecom.API/Ecom.API.csproj" />
+    <Project Path="Ecom.Application/Ecom.Application.csproj" />
+    <Project Path="Ecom.Core/Ecom.Core.csproj" />
+    <Project Path="Ecom.infrastructure/Ecom.infrastructure.csproj" />
+    <Project Path="Ecom.IntegrationTests/Ecom.IntegrationTests.csproj" />
+    <Project Path="Ecom.UnitTests/Ecom.UnitTests.csproj" />
+  </Folder>
+</Solution>
