@@ -16,7 +16,7 @@ public class Category : BaseEntity<int>
     public string Description { get; private set; } = null!;
     public ICollection<Product> Products { get; set; } = new HashSet<Product>();
 
-    public void UpdateDetails(string name, string description)
+    public Category UpdateDetails(string name, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Category name is required.", nameof(name));
@@ -26,5 +26,6 @@ public class Category : BaseEntity<int>
 
         Name = name;
         Description = description;
+        return this;
     }
 }

@@ -2,6 +2,8 @@
 
 public class Product : BaseEntity<int>
 {
+    private readonly List<Photo> _photos = new();
+
     private Product()
     {
         // EF Core materialization only.
@@ -9,12 +11,10 @@ public class Product : BaseEntity<int>
 
     public Product(string name, string description, int categoryId, decimal oldPrice, decimal newPrice)
     {
-        UpdateDetails(name, description);
-        UpdatePricing(oldPrice, newPrice);
+        UpdateDetails(name, description)
+            .UpdatePricing(oldPrice, newPrice);
         CategoryId = categoryId;
     }
-
-    private readonly List<Photo> _photos = new();
 
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
@@ -24,7 +24,11 @@ public class Product : BaseEntity<int>
     public int CategoryId { get; private set; }
     public Category Category { get; set; } = null!;
 
-    public void UpdateDetails(string name, string description)
+    // UpdateDetails and UpdatePricing touch unrelated groups of fields, so they
+    // are deliberately independent and may be called in any order, or on their
+    // own. Enforcing a sequence between them would encode a rule this domain
+    // does not have.
+    public Product UpdateDetails(string name, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Product name is required.", nameof(name));
@@ -34,9 +38,10 @@ public class Product : BaseEntity<int>
 
         Name = name;
         Description = description;
+        return this;
     }
 
-    public void UpdatePricing(decimal oldPrice, decimal newPrice)
+    public Product UpdatePricing(decimal oldPrice, decimal newPrice)
     {
         if (oldPrice < 0)
             throw new ArgumentException("Old price cannot be negative.", nameof(oldPrice));
@@ -46,6 +51,7 @@ public class Product : BaseEntity<int>
 
         OldPrice = oldPrice;
         NewPrice = newPrice;
+        return this;
     }
 
     public void AddPhoto(Photo photo)
