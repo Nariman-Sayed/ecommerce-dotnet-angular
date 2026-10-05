@@ -46,7 +46,7 @@ public class ProductCategoryRelationshipTests : IDisposable
         await _context.SaveChangesAsync();
 
         var product = new Product("Novel", "Test", category.Id, 60, 50);
-        product.Photos.Add(new Photo { ImageName = "cover.jpg" });
+        product.AddPhoto(new Photo { ImageName = "cover.jpg" });
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 

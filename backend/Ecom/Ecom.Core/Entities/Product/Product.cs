@@ -14,11 +14,13 @@ public class Product : BaseEntity<int>
         CategoryId = categoryId;
     }
 
+    private readonly List<Photo> _photos = new();
+
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public decimal OldPrice { get; private set; }
     public decimal NewPrice { get; private set; }
-    public List<Photo> Photos { get; set; } = new();
+    public IReadOnlyCollection<Photo> Photos => _photos;
     public int CategoryId { get; private set; }
     public Category Category { get; set; } = null!;
 
@@ -44,5 +46,17 @@ public class Product : BaseEntity<int>
 
         OldPrice = oldPrice;
         NewPrice = newPrice;
+    }
+
+    public void AddPhoto(Photo photo)
+    {
+        ArgumentNullException.ThrowIfNull(photo);
+        _photos.Add(photo);
+    }
+
+    public void RemovePhoto(Photo photo)
+    {
+        ArgumentNullException.ThrowIfNull(photo);
+        _photos.Remove(photo);
     }
 }
