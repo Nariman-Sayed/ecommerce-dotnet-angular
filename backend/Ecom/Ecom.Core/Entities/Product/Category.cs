@@ -2,6 +2,8 @@
 
 public class Category : BaseEntity<int>
 {
+    private readonly List<Product> _products = new();
+
     private Category()
     {
         // EF Core materialization only.
@@ -14,7 +16,7 @@ public class Category : BaseEntity<int>
 
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
-    public ICollection<Product> Products { get; set; } = new HashSet<Product>();
+    public IReadOnlyCollection<Product> Products => _products;
 
     public Category UpdateDetails(string name, string description)
     {
@@ -27,5 +29,17 @@ public class Category : BaseEntity<int>
         Name = name;
         Description = description;
         return this;
+    }
+
+    public void AddProduct(Product product)
+    {
+        ArgumentNullException.ThrowIfNull(product);
+        _products.Add(product);
+    }
+
+    public void RemoveProduct(Product product)
+    {
+        ArgumentNullException.ThrowIfNull(product);
+        _products.Remove(product);
     }
 }

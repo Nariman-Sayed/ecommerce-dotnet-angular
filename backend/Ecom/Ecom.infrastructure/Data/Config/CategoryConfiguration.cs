@@ -8,5 +8,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
         builder.Property(x => x.Name).IsRequired().HasMaxLength(30);
         builder.Property(x => x.Id).IsRequired();
+
+        builder.Navigation(c => c.Products)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }
