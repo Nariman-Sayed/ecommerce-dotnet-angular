@@ -41,14 +41,6 @@ namespace Ecom.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "test",
-                            Name = "test"
-                        });
                 });
 
             modelBuilder.Entity("Ecom.Core.Entities.Product.Photo", b =>
@@ -92,7 +84,10 @@ namespace Ecom.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal>("NewPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("OldPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -100,16 +95,6 @@ namespace Ecom.infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Description = "test",
-                            Name = "test",
-                            Price = 12m
-                        });
                 });
 
             modelBuilder.Entity("Ecom.Core.Entities.Product.Photo", b =>
@@ -128,7 +113,7 @@ namespace Ecom.infrastructure.Migrations
                     b.HasOne("Ecom.Core.Entities.Product.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");

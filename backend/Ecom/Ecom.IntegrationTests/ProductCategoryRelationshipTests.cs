@@ -23,17 +23,11 @@ public class ProductCategoryRelationshipTests : IDisposable
     [Fact]
     public async Task AddingProduct_WithValidCategory_PersistsAndLinksCategory()
     {
-        var category = new Category { Name = "Electronics", Description = "Devices" };
+        var category = new Category("Electronics", "Devices");
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
 
-        var product = new Product
-        {
-            Name = "Laptop",
-            Description = "Test laptop",
-            Price = 999,
-            CategoryId = category.Id
-        };
+        var product = new Product("Laptop", "Test laptop", category.Id, 1199, 999);
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 
@@ -47,9 +41,12 @@ public class ProductCategoryRelationshipTests : IDisposable
     [Fact]
     public async Task DeletingProduct_CascadesDeleteToPhotos()
     {
-        var category = new Category { Name = "Books", Description = "Reading" };
-        var product = new Product { Name = "Novel", Description = "Test", Price = 50, Category = category };
-        product.Photos.Add(new Photo { ImageName = "cover.jpg" });
+        var category = new Category("Books", "Reading");
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        var product = new Product("Novel", "Test", category.Id, 60, 50);
+        product.AddPhoto(new Photo { ImageName = "cover.jpg" });
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 

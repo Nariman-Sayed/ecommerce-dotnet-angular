@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -23,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ecom.infrastructure\Ecom.infrastructure.csproj" />
     <ProjectReference Include="..\Ecom.Core\Ecom.Core.csproj" />
+    <ProjectReference Include="..\Ecom.Application\Ecom.Application.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
     {
         builder.HasOne(p => p.Product)
             .WithMany(pr => pr.Photos)
-            .HasForeignKey(p => p.ProductId);
+            .HasForeignKey(p => p.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
