@@ -32,7 +32,8 @@ namespace Ecom.infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OldPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    NewPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -43,7 +44,7 @@ namespace Ecom.infrastructure.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -65,16 +66,6 @@ namespace Ecom.infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                table: "Categories",
-                columns: new[] { "Id", "Description", "Name" },
-                values: new object[] { 1, "test", "test" });
-
-            migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "Id", "CategoryId", "Description", "Name", "Price" },
-                values: new object[] { 1, 1, "test", "test", 12m });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_ProductId",

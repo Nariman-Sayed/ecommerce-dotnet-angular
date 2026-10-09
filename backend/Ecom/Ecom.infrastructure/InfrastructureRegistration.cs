@@ -7,9 +7,9 @@ using Microsoft.Extensions.FileProviders;
 
 namespace Ecom.infrastructure;
 
-public static class infrastructureRegistration
+public static class InfrastructureRegistration
 {
-    public static IServiceCollection infrastructureConfiguration(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection InfrastructureConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IImageManagementServices, ImageManagementService>();
 

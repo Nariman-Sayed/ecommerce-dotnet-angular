@@ -1,4 +1,4 @@
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 
 namespace Ecom.IntegrationTests;
 
@@ -9,7 +9,7 @@ public class ProductCategoryRelationshipTests : IDisposable
 
     public ProductCategoryRelationshipTests()
     {
-        _connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=True");
+        _connection = new SqliteConnection("DataSource=:memory:");
         _connection.Open();
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -23,17 +23,11 @@ public class ProductCategoryRelationshipTests : IDisposable
     [Fact]
     public async Task AddingProduct_WithValidCategory_PersistsAndLinksCategory()
     {
-        var category = new Category { Name = "Electronics", Description = "Devices" };
+        var category = new Category("Electronics", "Devices");
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
 
-        var product = new Product
-        {
-            Name = "Laptop",
-            Description = "Test laptop",
-            NewPrice = 999,
-            CategoryId = category.Id
-        };
+        var product = new Product("Laptop", "Test laptop", category.Id, 1199, 999);
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 
@@ -47,26 +41,20 @@ public class ProductCategoryRelationshipTests : IDisposable
     [Fact]
     public async Task DeletingProduct_CascadesDeleteToPhotos()
     {
-        var category = new Category { Name = "Books", Description = "Reading" };
-        var product = new Product { Name = "Novel", Description = "Test", NewPrice = 50, Category = category };
-        product.Photos.Add(new Photo { ImageName = "cover.jpg" });
+        var category = new Category("Books", "Reading");
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        var product = new Product("Novel", "Test", category.Id, 60, 50);
+        product.AddPhoto(new Photo { ImageName = "cover.jpg" });
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 
-        var productId = product.Id;
-
-        var fetchedProduct = await _context.Products
-            .Include(p => p.Photos)
-            .FirstAsync(p => p.Id == productId);
-
-        _context.Products.Remove(fetchedProduct);
+        _context.Products.Remove(product);
         await _context.SaveChangesAsync();
 
-        var remainingPhotosForProduct = await _context.Photos
-            .Where(p => p.ProductId == productId)
-            .CountAsync();
-
-        Assert.Equal(0, remainingPhotosForProduct);
+        var remainingPhotos = await _context.Photos.CountAsync();
+        Assert.Equal(0, remainingPhotos);
     }
 
     public void Dispose()

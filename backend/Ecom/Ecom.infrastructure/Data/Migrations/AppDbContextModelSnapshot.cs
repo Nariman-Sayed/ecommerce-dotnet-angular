@@ -41,14 +41,6 @@ namespace Ecom.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "test",
-                            Name = "test"
-                        });
                 });
 
             modelBuilder.Entity("Ecom.Core.Entities.Product.Photo", b =>
@@ -71,14 +63,6 @@ namespace Ecom.infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Photos");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 3,
-                            ImageName = "test",
-                            ProductId = 1
-                        });
                 });
 
             modelBuilder.Entity("Ecom.Core.Entities.Product.Product", b =>
@@ -111,17 +95,6 @@ namespace Ecom.infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Description = "test",
-                            Name = "test",
-                            NewPrice = 12m,
-                            OldPrice = 0m
-                        });
                 });
 
             modelBuilder.Entity("Ecom.Core.Entities.Product.Photo", b =>
@@ -140,7 +113,7 @@ namespace Ecom.infrastructure.Migrations
                     b.HasOne("Ecom.Core.Entities.Product.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");

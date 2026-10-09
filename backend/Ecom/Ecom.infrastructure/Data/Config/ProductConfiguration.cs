@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Ecom.infrastructure.Data.Config;
 
@@ -13,8 +13,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasOne(p => p.Category)
             .WithMany(c => c.Products)
-            .HasForeignKey(p => p.CategoryId);
+            .HasForeignKey(p => p.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasData(new Product { Id = 1, Name = "test", Description = "test", CategoryId = 1, OldPrice = 0, NewPrice = 12 });
+        builder.Navigation(p => p.Photos)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

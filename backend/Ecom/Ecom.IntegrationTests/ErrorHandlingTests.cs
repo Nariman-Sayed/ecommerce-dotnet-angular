@@ -16,6 +16,12 @@ public class ErrorHandlingTests : IClassFixture<WebApplicationFactory<Program>>,
         _connection = new SqliteConnection("DataSource=:memory:");
         _connection.Open();
 
+        using (var schema = new AppDbContext(
+            new DbContextOptionsBuilder<AppDbContext>().UseSqlite(_connection).Options))
+        {
+            schema.Database.EnsureCreated();
+        }
+
         var configuredFactory = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>
@@ -29,12 +35,6 @@ public class ErrorHandlingTests : IClassFixture<WebApplicationFactory<Program>>,
                     options.UseSqlite(_connection));
             });
         });
-
-        using (var scope = configuredFactory.Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            context.Database.EnsureCreated();
-        }
 
         _client = configuredFactory.CreateClient();
     }
