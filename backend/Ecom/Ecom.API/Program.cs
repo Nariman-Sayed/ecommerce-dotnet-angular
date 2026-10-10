@@ -9,7 +9,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

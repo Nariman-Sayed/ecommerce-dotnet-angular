@@ -1,14 +1,13 @@
-using Ecom.infrastructure.Repositries.Service;
 using Ecom.infrastructure.Services;
 using Microsoft.Extensions.FileProviders;
 using Moq;
 
 namespace Ecom.UnitTests;
 
-public class ImageManagementServiceTests
+public class ImageStorageTests
 {
     [Fact]
-    public void DeleteImageAsync_WhenFileDoesNotExist_DoesNotThrow()
+    public void Delete_WhenFileDoesNotExist_DoesNotThrow()
     {
         var fileInfoMock = new Mock<IFileInfo>();
         fileInfoMock.Setup(f => f.Exists).Returns(false);
@@ -16,9 +15,9 @@ public class ImageManagementServiceTests
         var fileProviderMock = new Mock<IFileProvider>();
         fileProviderMock.Setup(f => f.GetFileInfo(It.IsAny<string>())).Returns(fileInfoMock.Object);
 
-        var service = new ImageManagementService(fileProviderMock.Object);
+        var storage = new ImageStorage(fileProviderMock.Object);
 
-        var exception = Record.Exception(() => service.DeleteImageAsync("missing.jpg"));
+        var exception = Record.Exception(() => storage.Delete("missing.jpg"));
         Assert.Null(exception);
     }
 }

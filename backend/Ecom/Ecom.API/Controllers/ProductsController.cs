@@ -1,94 +1,53 @@
 using Ecom.API.DTO;
 using Ecom.API.Helper;
+using Ecom.Application;
 using Ecom.Core.DTO;
-using Ecom.Core.Entities.Product;
-using Ecom.infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController : BaseController
+public class ProductsController : ControllerBase
 {
-    private readonly IImageManagementServices imageManagementServices;
+    private readonly IProductService _productService;
 
-    public ProductsController(AppDbContext context, IMapper mapper, IImageManagementServices imageManagementServices)
-        : base(context, mapper)
+    public ProductsController(IProductService productService)
     {
-        this.imageManagementServices = imageManagementServices;
+        _productService = productService;
     }
-
-    private static IEnumerable<UploadedFile> ToUploadedFiles(IFormFileCollection files) =>
-        files.Where(f => f.Length > 0).Select(f => new UploadedFile(f.FileName, f.OpenReadStream()));
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Photos)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return Ok(mapper.Map<List<ProductDTO>>(products));
+        var products = await _productService.GetAllAsync();
+        return Ok(products);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var product = await context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Photos)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _productService.GetByIdAsync(id);
 
         if (product is null)
             return NotFound(new ResponseAPI(404, $"Product id={id} not found"));
 
-        return Ok(mapper.Map<ProductDTO>(product));
+        return Ok(product);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(AddProductDTO productDTO)
+    public async Task<IActionResult> Add([FromForm] AddProductRequest request)
     {
-        var product = mapper.Map<Product>(productDTO);
-        context.Products.Add(product);
-        await context.SaveChangesAsync();
-
-        var imagePaths = await imageManagementServices.AddImageAsync(ToUploadedFiles(productDTO.Photo), productDTO.Name);
-        var photos = imagePaths.Select(path => new Photo { ImageName = path, ProductId = product.Id }).ToList();
-
-        context.Photos.AddRange(photos);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = product.Id }, new ResponseAPI(201, "Product created"));
+        var id = await _productService.AddAsync(ToCoreAddDto(request), ToImageUploads(request.Photo));
+        return CreatedAtAction(nameof(GetById), new { id }, new ResponseAPI(201, "Product created"));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateProductDTO productDTO)
+    public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
     {
-        var product = await context.Products
-            .Include(p => p.Photos)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        if (product is null)
+        var updated = await _productService.UpdateAsync(id, ToCoreUpdateDto(request), ToImageUploads(request.Photo));
+        if (!updated)
             return NotFound(new ResponseAPI(404, $"Product id={id} not found"));
-
-        mapper.Map(productDTO, product);
-
-        var oldImageNames = product.Photos.Select(p => p.ImageName).ToList();
-        context.Photos.RemoveRange(product.Photos);
-
-        var imagePaths = await imageManagementServices.AddImageAsync(ToUploadedFiles(productDTO.Photo), productDTO.Name);
-        var newPhotos = imagePaths.Select(path => new Photo { ImageName = path, ProductId = product.Id }).ToList();
-        context.Photos.AddRange(newPhotos);
-
-        await context.SaveChangesAsync();
-
-        // Delete old files from disk only after the database update succeeds
-        foreach (var imageName in oldImageNames)
-            imageManagementServices.DeleteImageAsync(imageName);
 
         return Ok(new ResponseAPI(200, "Product updated"));
     }
@@ -96,22 +55,33 @@ public class ProductsController : BaseController
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var product = await context.Products
-            .Include(p => p.Photos)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        if (product is null)
+        var deleted = await _productService.DeleteAsync(id);
+        if (!deleted)
             return NotFound(new ResponseAPI(404, $"Product id={id} not found"));
-
-        var imageNames = product.Photos.Select(p => p.ImageName).ToList();
-
-        context.Products.Remove(product);
-        await context.SaveChangesAsync();
-
-        // Delete files from disk only after the database delete succeeds
-        foreach (var imageName in imageNames)
-            imageManagementServices.DeleteImageAsync(imageName);
 
         return Ok(new ResponseAPI(200, "Product deleted"));
     }
+
+    private static AddProductDTO ToCoreAddDto(AddProductRequest request) => new()
+    {
+        Name = request.Name,
+        Description = request.Description,
+        OldPrice = request.OldPrice,
+        NewPrice = request.NewPrice,
+        CategoryId = request.CategoryId
+    };
+
+    private static UpdateProductDTO ToCoreUpdateDto(UpdateProductRequest request) => new()
+    {
+        Name = request.Name,
+        Description = request.Description,
+        OldPrice = request.OldPrice,
+        NewPrice = request.NewPrice,
+        CategoryId = request.CategoryId
+    };
+
+    private static IReadOnlyList<ImageUpload> ToImageUploads(IFormFileCollection files) =>
+        files.Where(f => f.Length > 0)
+            .Select(f => new ImageUpload(f.FileName, f.OpenReadStream()))
+            .ToList();
 }

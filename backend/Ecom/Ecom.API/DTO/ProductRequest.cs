@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Ecom.API.DTO;
 
-public record AddProductDTO
+public record AddProductRequest
 {
     public required string Name { get; set; }
     public required string Description { get; set; }
@@ -12,6 +12,4 @@ public record AddProductDTO
     public required IFormFileCollection Photo { get; set; }
 }
 
-public record UpdateProductDTO : AddProductDTO
-{
-}
+public record UpdateProductRequest : AddProductRequest;

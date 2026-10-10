@@ -1,12 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <NoWarn>NU1903</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
-    <!-- See Ecom.API.csproj for AutoMapper 12.0.1 vulnerability documentation (NU1903). -->
-    <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
