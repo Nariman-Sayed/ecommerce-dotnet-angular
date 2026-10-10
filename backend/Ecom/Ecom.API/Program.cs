@@ -1,4 +1,4 @@
-using Ecom.API.Mapping;
+using Ecom.Application;
 using Ecom.infrastructure;
 using Ecom.infrastructure.Data;
 
@@ -8,7 +8,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.InfrastructureConfiguration(builder.Configuration);
-builder.Services.AddAutoMapper(typeof(CategoryMapping).Assembly);
+builder.Services.AddApplication();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -26,3 +27,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+public partial class Program { }
