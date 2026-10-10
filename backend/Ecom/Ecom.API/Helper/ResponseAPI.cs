@@ -1,4 +1,4 @@
-﻿namespace Ecom.API.Helper;
+namespace Ecom.API.Helper;
 
 public class ResponseAPI
 {
@@ -24,5 +24,5 @@ public class ResponseAPI
     }
 
     public int StatusCode { get; set; }
-    public string? Message { get; set; }
+    public string Message { get; set; }
 }
