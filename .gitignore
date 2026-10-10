@@ -1,0 +1,41 @@
+## .NET / Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Environment / secrets
+*.env
+appsettings.Development.json
+appsettings.Local.json
+
+## Angular (for later, frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
