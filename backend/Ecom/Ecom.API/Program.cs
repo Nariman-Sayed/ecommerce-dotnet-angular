@@ -6,7 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, "Ecom.API.xml");
+    options.IncludeXmlComments(xmlPath);
+});
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
@@ -28,4 +32,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
+/// <summary>
+/// The application entry point, exposed for integration testing.
+/// </summary>
 public partial class Program { }
