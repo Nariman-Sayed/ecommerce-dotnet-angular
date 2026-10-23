@@ -43,16 +43,20 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Add_Then_GetAll_ReturnsAddedCategory()
+    public async Task Add_ReturnsCreatedWithLocationToNewCategory()
     {
         var response = await _client.PostAsJsonAsync("/api/categories", new CategoryDTO("Electronics", "Devices"));
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        var categories = await _client.GetFromJsonAsync<List<CategoryResponse>>("/api/categories");
+        var location = response.Headers.Location;
+        Assert.NotNull(location);
 
-        Assert.NotNull(categories);
-        Assert.Contains(categories!, c => c.Name == "Electronics" && c.Description == "Devices");
+        var created = await _client.GetFromJsonAsync<CategoryResponse>(location);
+
+        Assert.NotNull(created);
+        Assert.Equal("Electronics", created!.Name);
+        Assert.Equal("Devices", created.Description);
     }
 
     [Fact]
@@ -88,14 +92,14 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Delete_RemovesCategory()
+    public async Task Delete_ReturnsNoContent_AndRemovesCategory()
     {
         await _client.PostAsJsonAsync("/api/categories", new CategoryDTO("Temporary", "To delete"));
         var created = await GetSingleCategoryAsync();
 
         var response = await _client.DeleteAsync($"/api/categories/{created.Id}");
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         var getResponse = await _client.GetAsync($"/api/categories/{created.Id}");
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);

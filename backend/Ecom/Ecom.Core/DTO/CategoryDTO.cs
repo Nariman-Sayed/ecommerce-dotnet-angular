@@ -1,5 +1,10 @@
-﻿namespace Ecom.Core.DTO;
+using Ecom.Core.Entities.Product;
 
-public record CategoryDTO(string Name, string Description);
+namespace Ecom.Core.DTO;
+
+public record CategoryDTO(string Name, string Description)
+{
+    public Category ToCategory() => new(Name, Description);
+}
 
 public record UpdateCategoryDTO(string Name, string Description);
