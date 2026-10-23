@@ -1,3 +1,4 @@
+using Ecom.Application;
 using Ecom.infrastructure;
 using Ecom.infrastructure.Data;
 
@@ -5,8 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, "Ecom.API.xml");
+    options.IncludeXmlComments(xmlPath);
+});
 builder.Services.InfrastructureConfiguration(builder.Configuration);
+builder.Services.AddApplication();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -21,9 +28,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
+
+/// <summary>
+/// The application entry point, exposed for integration testing.
+/// </summary>
+public partial class Program { }
