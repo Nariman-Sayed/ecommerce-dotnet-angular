@@ -19,10 +19,12 @@ public class CategoryService : ICategoryService
         return await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task AddAsync(CategoryDTO category)
+    public async Task<int> AddAsync(CategoryDTO category)
     {
-        _context.Categories.Add(new Category(category.Name, category.Description));
+        var created = category.ToCategory();
+        _context.Categories.Add(created);
         await _context.SaveChangesAsync();
+        return created.Id;
     }
 
     public async Task<bool> UpdateAsync(int id, UpdateCategoryDTO category)
