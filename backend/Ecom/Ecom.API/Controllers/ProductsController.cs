@@ -29,6 +29,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     /// <returns>Every product in the catalogue.</returns>
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<ProductDTO>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var products = await _productService.GetAllAsync();
@@ -41,6 +42,8 @@ public class ProductsController : ControllerBase
     /// <param name="id">The identifier of the product to retrieve.</param>
     /// <returns>The requested product, or a not-found response when it does not exist.</returns>
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
         var product = await _productService.GetByIdAsync(id);
@@ -57,6 +60,7 @@ public class ProductsController : ControllerBase
     /// <param name="request">The product fields and the uploaded photos.</param>
     /// <returns>A created response whose location points to the new product.</returns>
     [HttpPost]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status201Created)]
     public async Task<IActionResult> Add([FromForm] AddProductRequest request)
     {
         var id = await _productService.AddAsync(ToCoreAddDto(request), ToImageUploads(request.Photo));
@@ -70,6 +74,8 @@ public class ProductsController : ControllerBase
     /// <param name="request">The new product fields and any replacement photos.</param>
     /// <returns>An OK response when updated, or a not-found response when the product does not exist.</returns>
     [HttpPut("{id}")]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
     {
         var updated = await _productService.UpdateAsync(id, ToCoreUpdateDto(request), ToImageUploads(request.Photo));
