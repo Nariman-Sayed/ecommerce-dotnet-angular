@@ -128,7 +128,7 @@ public class ProductsEndpointTests : IClassFixture<WebApplicationFactory<Program
 
         var response = await _client.DeleteAsync($"/api/products/{id}");
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.False(File.Exists(image));
 
         var getResponse = await _client.GetAsync($"/api/products/{id}");

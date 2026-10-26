@@ -83,15 +83,17 @@ public class ProductsController : ControllerBase
     /// Deletes an existing product.
     /// </summary>
     /// <param name="id">The identifier of the product to delete.</param>
-    /// <returns>An OK response when deleted, or a not-found response when the product does not exist.</returns>
+    /// <returns>No content when deleted, or a not-found response when the product does not exist.</returns>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _productService.DeleteAsync(id);
         if (!deleted)
             return NotFound(new ResponseAPI(404, $"Product id={id} not found"));
 
-        return Ok(new ResponseAPI(200, "Product deleted"));
+        return NoContent();
     }
 
     private static AddProductDTO ToCoreAddDto(AddProductRequest request) => new()
