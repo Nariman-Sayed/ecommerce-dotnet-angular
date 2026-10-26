@@ -13,7 +13,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -27,6 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
