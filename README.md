@@ -24,8 +24,7 @@ own review cycle. See docs/roadmap.md for my phased plan.
 
 ASP.NET Core 8 Web API. Entity Framework Core with SQL Server. ASP.NET
 Core Identity with JWT authentication. Redis, using StackExchange.Redis,
-for basket caching. Stripe for payment processing. AutoMapper for DTO
-mapping.
+for basket caching. Stripe for payment processing.
 
 ## Project Structure
 
