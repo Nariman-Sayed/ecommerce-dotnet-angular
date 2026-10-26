@@ -1,3 +1,5 @@
+using Ecom.Core.Entities.Product;
+
 namespace Ecom.Core.DTO;
 
 public record AddProductDTO
@@ -7,6 +9,8 @@ public record AddProductDTO
     public decimal OldPrice { get; set; }
     public decimal NewPrice { get; set; }
     public int CategoryId { get; set; }
+
+    public Product ToProduct() => new(Name, Description, CategoryId, OldPrice, NewPrice);
 }
 
 public record UpdateProductDTO : AddProductDTO;

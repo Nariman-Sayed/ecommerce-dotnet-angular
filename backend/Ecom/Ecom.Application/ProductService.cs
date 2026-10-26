@@ -35,7 +35,7 @@ public class ProductService : IProductService
 
     public async Task<int> AddAsync(AddProductDTO product, IReadOnlyList<ImageUpload> images)
     {
-        var entity = new Product(product.Name, product.Description, product.CategoryId, product.OldPrice, product.NewPrice);
+        var entity = product.ToProduct();
 
         _context.Products.Add(entity);
         await _context.SaveChangesAsync();
