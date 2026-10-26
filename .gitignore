@@ -39,3 +39,6 @@ appsettings.Local.json
 frontend/node_modules/
 frontend/dist/
 frontend/.angular/
+
+## Local study material (never commit)
+*_Study_Pack*
