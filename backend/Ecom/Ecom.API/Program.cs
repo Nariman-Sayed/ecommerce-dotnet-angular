@@ -106,6 +106,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddApiRateLimiting(builder.Configuration);
+builder.Services.AddApiCors(builder.Configuration);
 var app = builder.Build();
 
 // Run before the exception handler so error responses carry the headers too.
@@ -129,6 +130,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors(CorsExtensions.PolicyName);
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
