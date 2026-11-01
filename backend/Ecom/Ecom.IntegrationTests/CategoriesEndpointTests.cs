@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Ecom.API;
 using Ecom.Core.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -36,10 +37,13 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
 
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlite(_connection));
+
+                services.AddTestAuthentication();
             });
         });
 
         _client = configuredFactory.CreateClient();
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.RoleHeaderName, AuthPolicies.AdminRole);
     }
 
     [Fact]
