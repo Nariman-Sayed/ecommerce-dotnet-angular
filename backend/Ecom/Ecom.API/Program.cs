@@ -106,6 +106,8 @@ builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
 var app = builder.Build();
 
+// Run before the exception handler so error responses carry the headers too.
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
