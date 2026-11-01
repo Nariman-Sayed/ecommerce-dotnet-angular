@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Ecom.API;
 using Ecom.API.Authentication;
+using Ecom.API.Extensions;
 using Ecom.API.Middleware;
 using Ecom.Application;
 using Ecom.infrastructure;
@@ -104,6 +105,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddApiRateLimiting(builder.Configuration);
 var app = builder.Build();
 
 // Run before the exception handler so error responses carry the headers too.
@@ -127,9 +129,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+app.MapControllers().RequireRateLimiting(RateLimitingExtensions.FixedWindowPolicy);
 app.Run();
 
 /// <summary>

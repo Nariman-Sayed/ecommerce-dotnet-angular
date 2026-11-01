@@ -28,6 +28,8 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
         var configuredFactory = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("RateLimiting:PermitLimit", "1000");
+            builder.UseSetting("RateLimiting:WindowSeconds", "60");
             builder.ConfigureServices(services =>
             {
                 var descriptor = services.SingleOrDefault(

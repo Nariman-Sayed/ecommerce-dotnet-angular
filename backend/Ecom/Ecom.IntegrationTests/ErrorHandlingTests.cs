@@ -24,6 +24,8 @@ public class ErrorHandlingTests : IClassFixture<WebApplicationFactory<Program>>,
 
         var configuredFactory = factory.WithWebHostBuilder(builder =>
         {
+            builder.UseSetting("RateLimiting:PermitLimit", "1000");
+            builder.UseSetting("RateLimiting:WindowSeconds", "60");
             builder.ConfigureServices(services =>
             {
                 var descriptor = services.SingleOrDefault(
