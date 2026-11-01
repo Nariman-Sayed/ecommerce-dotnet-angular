@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Ecom.API;
 using Ecom.API.Authentication;
+using Ecom.API.Middleware;
 using Ecom.Application;
 using Ecom.infrastructure;
 using Ecom.infrastructure.Data;
@@ -99,9 +100,13 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(AuthPolicies.Admin, policy => policy.RequireRole(AuthPolicies.AdminRole));
 });
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
