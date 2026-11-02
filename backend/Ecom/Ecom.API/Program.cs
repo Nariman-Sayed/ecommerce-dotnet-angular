@@ -10,10 +10,23 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var authority = builder.Configuration["Authentication:Authority"]?.TrimEnd('/')
-    ?? throw new InvalidOperationException("Authentication:Authority is not configured.");
-var audience = builder.Configuration["Authentication:Audience"]
-    ?? throw new InvalidOperationException("Authentication:Audience is not configured.");
+var authority = builder.Configuration["Authentication:Authority"]?.TrimEnd('/');
+if (string.IsNullOrWhiteSpace(authority))
+{
+    throw new InvalidOperationException(
+        "Authentication:Authority is not configured. Set it in appsettings.Development.json " +
+        "for local development, or provide it through configuration or the " +
+        "Authentication__Authority environment variable in other environments.");
+}
+
+var audience = builder.Configuration["Authentication:Audience"];
+if (string.IsNullOrWhiteSpace(audience))
+{
+    throw new InvalidOperationException(
+        "Authentication:Audience is not configured. Set it in appsettings.Development.json " +
+        "for local development, or provide it through configuration or the " +
+        "Authentication__Audience environment variable in other environments.");
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
