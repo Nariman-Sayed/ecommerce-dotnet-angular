@@ -82,12 +82,13 @@ public class ProductsEndpointTests : IClassFixture<WebApplicationFactory<Program
         var category = await CreateCategoryAsync("Books");
         await AddProductAsync("Novel", "Fiction", 30, 20, category.Id, ("cover.png", new byte[] { 1 }));
 
-        var products = await _client.GetFromJsonAsync<List<ProductResponse>>("/api/products");
+        var response = await _client.GetFromJsonAsync<PaginationResponse<ProductResponse>>("/api/products");
 
-        var product = Assert.Single(products!);
+        var product = Assert.Single(response!.Data);
         Assert.True(product.Id > 0);
         Assert.Equal("Novel", product.Name);
         Assert.Equal("Books", product.CategoryName);
+        Assert.Equal(1, response.TotalCount);
     }
 
     [Fact]
@@ -280,4 +281,10 @@ public class ProductsEndpointTests : IClassFixture<WebApplicationFactory<Program
         List<PhotoResponse> Photos);
 
     private sealed record PhotoResponse(string ImageName, int ProductId);
+
+    private sealed record PaginationResponse<T>(
+        int PageIndex,
+        int PageSize,
+        int TotalCount,
+        List<T> Data);
 }
