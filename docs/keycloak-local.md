@@ -7,12 +7,29 @@ docker compose up -d keycloak
 ```
 
 Keycloak listens on `http://localhost:8080`, and the `ecom` realm is imported on
-first start. The development users are:
+first start. The Compose file publishes the port on `127.0.0.1`, so Keycloak is
+reachable from this machine only. The development users are:
 
 - `admin` / `admin-password` (admin role)
 - `customer` / `customer-password` (customer role)
 
 These credentials are fake and only exist in the local realm export.
+
+## API authentication configuration
+
+For local development, the API reads `Authentication:Authority` and
+`Authentication:Audience` from
+`backend/Ecom/Ecom.API/appsettings.Development.json`. The authority points at the
+local realm:
+
+```text
+http://localhost:8080/realms/ecom
+```
+
+Outside Development, the base `appsettings.json` does not contain these values.
+Provide them through configuration or the `Authentication__Authority` and
+`Authentication__Audience` environment variables. Startup fails with a clear
+message when either value is missing.
 
 ## Getting a token for Swagger
 
