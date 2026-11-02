@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ecom.API\Ecom.API.csproj" />
+    <ProjectReference Include="..\Ecom.Application\Ecom.Application.csproj" />
     <ProjectReference Include="..\Ecom.Core\Ecom.Core.csproj" />
     <ProjectReference Include="..\Ecom.infrastructure\Ecom.infrastructure.csproj" />
   </ItemGroup>
