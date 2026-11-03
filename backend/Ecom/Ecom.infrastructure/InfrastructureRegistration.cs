@@ -1,4 +1,5 @@
-﻿using Ecom.infrastructure.Data;
+﻿using Ecom.Application;
+using Ecom.infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,7 @@ public static class InfrastructureRegistration
         {
             op.UseSqlServer(configuration.GetConnectionString("EcomDatabase"));
         });
+        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<AppDbContext>());
         return services;
     }
 }

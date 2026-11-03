@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
+using Ecom.Application;
 
 namespace Ecom.infrastructure.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IApplicationDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
