@@ -1,4 +1,4 @@
-namespace Ecom.Application;
+﻿namespace Ecom.Application;
 
 public interface IProductService
 {
@@ -6,9 +6,9 @@ public interface IProductService
 
     Task<ProductDTO?> GetByIdAsync(int id);
 
-    Task<int> AddAsync(AddProductDTO product, IReadOnlyList<ImageUpload> images);
+    Task<ProductDTO> AddAsync(AddProductDTO product, IReadOnlyList<ImageUpload> images);
 
-    Task<bool> UpdateAsync(int id, UpdateProductDTO product, IReadOnlyList<ImageUpload> images);
+    Task<ProductDTO?> UpdateAsync(int id, UpdateProductDTO product, IReadOnlyList<ImageUpload> images);
 
     Task<bool> DeleteAsync(int id);
 }

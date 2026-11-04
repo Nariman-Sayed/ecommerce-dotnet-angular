@@ -1,4 +1,4 @@
-namespace Ecom.Application;
+﻿namespace Ecom.Application;
 
 public class CategoryService : ICategoryService
 {
@@ -9,33 +9,35 @@ public class CategoryService : ICategoryService
         _context = context;
     }
 
-    public async Task<IReadOnlyList<Category>> GetAllAsync()
+    public async Task<IReadOnlyList<CategoryResponseDTO>> GetAllAsync()
     {
-        return await _context.Categories.AsNoTracking().ToListAsync();
+        var categories = await _context.Categories.AsNoTracking().ToListAsync();
+        return categories.Select(ToDto).ToList();
     }
 
-    public async Task<Category?> GetByIdAsync(int id)
+    public async Task<CategoryResponseDTO?> GetByIdAsync(int id)
     {
-        return await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        var category = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        return category is null ? null : ToDto(category);
     }
 
-    public async Task<int> AddAsync(CategoryDTO category)
+    public async Task<CategoryResponseDTO> AddAsync(CategoryDTO category)
     {
         var created = category.ToCategory();
         _context.Categories.Add(created);
         await _context.SaveChangesAsync();
-        return created.Id;
+        return ToDto(created);
     }
 
-    public async Task<bool> UpdateAsync(int id, UpdateCategoryDTO category)
+    public async Task<CategoryResponseDTO?> UpdateAsync(int id, UpdateCategoryDTO category)
     {
         var existing = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
         if (existing is null)
-            return false;
+            return null;
 
         existing.UpdateDetails(category.Name, category.Description);
         await _context.SaveChangesAsync();
-        return true;
+        return ToDto(existing);
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -48,4 +50,7 @@ public class CategoryService : ICategoryService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    private static CategoryResponseDTO ToDto(Category category) =>
+        new(category.Id, category.Name, category.Description);
 }

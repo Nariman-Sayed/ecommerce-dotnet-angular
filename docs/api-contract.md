@@ -31,6 +31,14 @@
 | PUT | Update-Product | No (gap) |
 | DELETE | Delete-Product/{Id} | No (gap) |
 
+### Catalogue write responses
+
+`POST /api/categories` and `POST /api/products` return `201 Created` with a
+`Location` header pointing at the new resource and the created resource as its
+response DTO. `PUT /api/categories/{id}` and `PUT /api/products/{id}` return
+`200 OK` with the updated DTO. Both response DTOs include the resource id, so a
+client does not need a second request to learn it.
+
 ## Baskets (/api/baskets)
 | Method | Route | Auth |
 |---|---|---|

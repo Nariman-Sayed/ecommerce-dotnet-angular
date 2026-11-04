@@ -33,7 +33,7 @@ public class ProductService : IProductService
         return product is null ? null : ToDto(product);
     }
 
-    public async Task<int> AddAsync(AddProductDTO product, IReadOnlyList<ImageUpload> images)
+    public async Task<ProductDTO> AddAsync(AddProductDTO product, IReadOnlyList<ImageUpload> images)
     {
         var entity = product.ToProduct();
 
@@ -46,17 +46,18 @@ public class ProductService : IProductService
 
         await _context.SaveChangesAsync();
 
-        return entity.Id;
+        return await GetByIdAsync(entity.Id)
+            ?? throw new InvalidOperationException($"Product id={entity.Id} was not found after creation.");
     }
 
-    public async Task<bool> UpdateAsync(int id, UpdateProductDTO product, IReadOnlyList<ImageUpload> images)
+    public async Task<ProductDTO?> UpdateAsync(int id, UpdateProductDTO product, IReadOnlyList<ImageUpload> images)
     {
         var entity = await _context.Products
             .Include(p => p.Photos)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (entity is null)
-            return false;
+            return null;
 
         entity.UpdateDetails(product.Name, product.Description)
             .UpdatePricing(product.OldPrice, product.NewPrice);
@@ -73,7 +74,7 @@ public class ProductService : IProductService
         foreach (var imageName in oldImageNames)
             _imageStorage.Delete(imageName);
 
-        return true;
+        return await GetByIdAsync(id);
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -98,6 +99,7 @@ public class ProductService : IProductService
 
     private static ProductDTO ToDto(Product product) => new()
     {
+        Id = product.Id,
         Name = product.Name,
         Description = product.Description,
         OldPrice = product.OldPrice,

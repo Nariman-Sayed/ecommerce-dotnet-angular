@@ -1,14 +1,14 @@
-namespace Ecom.Application;
+﻿namespace Ecom.Application;
 
 public interface ICategoryService
 {
-    Task<IReadOnlyList<Category>> GetAllAsync();
+    Task<IReadOnlyList<CategoryResponseDTO>> GetAllAsync();
 
-    Task<Category?> GetByIdAsync(int id);
+    Task<CategoryResponseDTO?> GetByIdAsync(int id);
 
-    Task<int> AddAsync(CategoryDTO category);
+    Task<CategoryResponseDTO> AddAsync(CategoryDTO category);
 
-    Task<bool> UpdateAsync(int id, UpdateCategoryDTO category);
+    Task<CategoryResponseDTO?> UpdateAsync(int id, UpdateCategoryDTO category);
 
     Task<bool> DeleteAsync(int id);
 }

@@ -52,10 +52,18 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
         var location = response.Headers.Location;
         Assert.NotNull(location);
 
+        var createdBody = await response.Content.ReadFromJsonAsync<CategoryResponse>();
+        Assert.NotNull(createdBody);
+        Assert.True(createdBody!.Id > 0);
+        Assert.Equal("Electronics", createdBody.Name);
+        Assert.Equal("Devices", createdBody.Description);
+        Assert.Equal(createdBody.Id, int.Parse(location!.ToString().Split('/', StringSplitOptions.RemoveEmptyEntries)[^1], System.Globalization.CultureInfo.InvariantCulture));
+
         var created = await _client.GetFromJsonAsync<CategoryResponse>(location);
 
         Assert.NotNull(created);
-        Assert.Equal("Electronics", created!.Name);
+        Assert.Equal(createdBody.Id, created!.Id);
+        Assert.Equal("Electronics", created.Name);
         Assert.Equal("Devices", created.Description);
     }
 
@@ -68,7 +76,8 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
         var category = await _client.GetFromJsonAsync<CategoryResponse>($"/api/categories/{created.Id}");
 
         Assert.NotNull(category);
-        Assert.Equal("Books", category!.Name);
+        Assert.Equal(created.Id, category!.Id);
+        Assert.Equal("Books", category.Name);
         Assert.Equal("Reading", category.Description);
     }
 
@@ -83,6 +92,12 @@ public class CategoriesEndpointTests : IClassFixture<WebApplicationFactory<Progr
             new UpdateCategoryDTO("New name", "New description"));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var updatedBody = await response.Content.ReadFromJsonAsync<CategoryResponse>();
+        Assert.NotNull(updatedBody);
+        Assert.Equal(created.Id, updatedBody!.Id);
+        Assert.Equal("New name", updatedBody.Name);
+        Assert.Equal("New description", updatedBody.Description);
 
         var updated = await _client.GetFromJsonAsync<CategoryResponse>($"/api/categories/{created.Id}");
 

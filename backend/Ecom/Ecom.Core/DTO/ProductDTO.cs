@@ -2,6 +2,7 @@ namespace Ecom.Core.DTO;
 
 public record ProductDTO
 {
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public decimal OldPrice { get; set; }

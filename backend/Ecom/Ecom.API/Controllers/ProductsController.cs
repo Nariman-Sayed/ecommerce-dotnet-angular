@@ -58,13 +58,13 @@ public class ProductsController : ControllerBase
     /// Creates a new product.
     /// </summary>
     /// <param name="request">The product fields and the uploaded photos.</param>
-    /// <returns>A created response whose location points to the new product.</returns>
+    /// <returns>A created response carrying the new product and a location pointing to it.</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status201Created)]
     public async Task<IActionResult> Add([FromForm] AddProductRequest request)
     {
-        var id = await _productService.AddAsync(ToCoreAddDto(request), ToImageUploads(request.Photo));
-        return CreatedAtAction(nameof(GetById), new { id }, new ResponseAPI(201, "Product created"));
+        var product = await _productService.AddAsync(ToCoreAddDto(request), ToImageUploads(request.Photo));
+        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
     /// <summary>
@@ -72,17 +72,17 @@ public class ProductsController : ControllerBase
     /// </summary>
     /// <param name="id">The identifier of the product to update.</param>
     /// <param name="request">The new product fields and any replacement photos.</param>
-    /// <returns>An OK response when updated, or a not-found response when the product does not exist.</returns>
+    /// <returns>The updated product, or a not-found response when the product does not exist.</returns>
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
     {
         var updated = await _productService.UpdateAsync(id, ToCoreUpdateDto(request), ToImageUploads(request.Photo));
-        if (!updated)
+        if (updated is null)
             return NotFound(new ResponseAPI(404, $"Product id={id} not found"));
 
-        return Ok(new ResponseAPI(200, "Product updated"));
+        return Ok(updated);
     }
 
     /// <summary>
