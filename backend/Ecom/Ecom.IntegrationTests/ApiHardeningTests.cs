@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Ecom.API;
 using Ecom.API.Helper;
 using Ecom.infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
@@ -41,9 +42,12 @@ public class ApiHardeningTests : IClassFixture<WebApplicationFactory<Program>>, 
             builder.UseSetting("RateLimiting:PermitLimit", "1000");
             builder.UseSetting("RateLimiting:WindowSeconds", "60");
             ConfigureSqlite(builder);
+            builder.ConfigureServices(services => services.AddTestAuthentication());
         });
 
-        return factory.CreateClient();
+        var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestAuthHandler.RoleHeaderName, AuthPolicies.AdminRole);
+        return client;
     }
 
     private void ConfigureSqlite(IWebHostBuilder builder) =>

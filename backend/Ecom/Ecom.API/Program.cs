@@ -75,7 +75,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = authority;
         options.Audience = audience;
-        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment()
+            && !builder.Environment.IsEnvironment("Testing");
         options.TokenValidationParameters = new TokenValidationParameters
         {
             NameClaimType = "preferred_username",
@@ -111,7 +112,7 @@ var app = builder.Build();
 
 // Run before the exception handler so error responses carry the headers too.
 app.UseMiddleware<SecurityHeadersMiddleware>();
-app.UseExceptionHandler();
+app.UseExceptionHandler("/errors/500");
 
 if (app.Environment.IsDevelopment())
 {
