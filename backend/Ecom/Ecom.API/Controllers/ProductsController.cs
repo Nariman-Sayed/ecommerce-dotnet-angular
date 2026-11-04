@@ -26,14 +26,15 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all products.
+    /// Retrieves a page of products.
     /// </summary>
-    /// <returns>Every product in the catalogue.</returns>
+    /// <param name="productParams">The query parameters.</param>
+    /// <returns>A page of products.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<ProductDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(Pagination<ProductDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll([FromQuery] ProductParams productParams)
     {
-        var products = await _productService.GetAllAsync();
+        var products = await _productService.GetAllAsync(productParams);
         return Ok(products);
     }
 

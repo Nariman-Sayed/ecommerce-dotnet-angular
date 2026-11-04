@@ -1,27 +1,60 @@
+using Ecom.Application.Extensions;
+using Ecom.Core.DTO;
+using Ecom.Core.Entities.Product;
+
 namespace Ecom.Application;
 
+/// <summary>
+/// Application service for catalogue products.
+/// </summary>
 public class ProductService : IProductService
 {
     private readonly IApplicationDbContext _context;
     private readonly IImageStorage _imageStorage;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProductService"/> class.
+    /// </summary>
+    /// <param name="context">The application database context.</param>
+    /// <param name="imageStorage">The image storage port.</param>
     public ProductService(IApplicationDbContext context, IImageStorage imageStorage)
     {
         _context = context;
         _imageStorage = imageStorage;
     }
 
-    public async Task<IReadOnlyList<ProductDTO>> GetAllAsync()
+    /// <summary>
+    /// Returns a page of products matching the supplied query parameters.
+    /// </summary>
+    /// <param name="productParams">The query parameters.</param>
+    /// <returns>A page of products.</returns>
+    public async Task<Pagination<ProductDTO>> GetAllAsync(ProductParams productParams)
     {
-        var products = await _context.Products
+        productParams ??= new ProductParams();
+
+        var query = _context.Products
             .Include(p => p.Category)
             .Include(p => p.Photos)
             .AsNoTracking()
+            .ApplyFilter(productParams.CategoryId)
+            .ApplySearch(productParams.Search)
+            .ApplySort(productParams.Sort);
+
+        var count = await query.CountAsync();
+
+        var products = await query
+            .ApplyPaging(productParams.PageIndex, productParams.PageSize)
             .ToListAsync();
 
-        return products.Select(ToDto).ToList();
+        var data = products.Select(ToDto).ToList();
+        return new Pagination<ProductDTO>(productParams.PageIndex, productParams.PageSize, count, data);
     }
 
+    /// <summary>
+    /// Retrieves a single product by its identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the product to retrieve.</param>
+    /// <returns>The requested product, or <c>null</c> when it does not exist.</returns>
     public async Task<ProductDTO?> GetByIdAsync(int id)
     {
         var product = await _context.Products
@@ -33,6 +66,12 @@ public class ProductService : IProductService
         return product is null ? null : ToDto(product);
     }
 
+    /// <summary>
+    /// Creates a new product.
+    /// </summary>
+    /// <param name="product">The product fields.</param>
+    /// <param name="images">The uploaded images.</param>
+    /// <returns>The created product.</returns>
     public async Task<ProductDTO> AddAsync(AddProductDTO product, IReadOnlyList<ImageUpload> images)
     {
         var entity = product.ToProduct();
@@ -50,6 +89,13 @@ public class ProductService : IProductService
             ?? throw new InvalidOperationException($"Product id={entity.Id} was not found after creation.");
     }
 
+    /// <summary>
+    /// Updates an existing product.
+    /// </summary>
+    /// <param name="id">The identifier of the product to update.</param>
+    /// <param name="product">The new product fields.</param>
+    /// <param name="images">Any replacement photos.</param>
+    /// <returns>The updated product, or <c>null</c> when it does not exist.</returns>
     public async Task<ProductDTO?> UpdateAsync(int id, UpdateProductDTO product, IReadOnlyList<ImageUpload> images)
     {
         var entity = await _context.Products
@@ -77,6 +123,11 @@ public class ProductService : IProductService
         return await GetByIdAsync(id);
     }
 
+    /// <summary>
+    /// Deletes an existing product.
+    /// </summary>
+    /// <param name="id">The identifier of the product to delete.</param>
+    /// <returns><c>true</c> when deleted; otherwise <c>false</c>.</returns>
     public async Task<bool> DeleteAsync(int id)
     {
         var entity = await _context.Products

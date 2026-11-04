@@ -35,6 +35,24 @@ receive 401, and authenticated requests without the role receive 403.
 | PUT | Update-Product | Yes, Admin |
 | DELETE | Delete-Product/{Id} | Yes, Admin |
 
+### Product list query
+
+`GET /api/products` accepts `sort` (`priceAsc` or `priceDesc`; any other value
+falls back to id order), `categoryId`, `search`, `pageIndex` and `pageSize`.
+Every word in `search` must appear in the product name or description, ignoring
+case. Pages are 1-based, `pageSize` is capped at 6, and values below 1 become 1.
+
+The response is a page instead of a bare array:
+
+```json
+{
+  "pageIndex": 1,
+  "pageSize": 6,
+  "totalCount": 10,
+  "data": []
+}
+```
+
 ### Catalogue write responses
 
 `POST /api/categories` and `POST /api/products` return `201 Created` with a
