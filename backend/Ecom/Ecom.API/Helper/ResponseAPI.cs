@@ -1,4 +1,4 @@
-﻿namespace Ecom.API.Helper;
+namespace Ecom.API.Helper;
 
 /// <summary>
 /// Represents a uniform API response carrying a status code and message.

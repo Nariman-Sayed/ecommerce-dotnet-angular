@@ -1,4 +1,4 @@
-using Ecom.Core.Entities.Product;
+﻿using Ecom.Core.Entities.Product;
 
 namespace Ecom.Core.DTO;
 
@@ -8,3 +8,5 @@ public record CategoryDTO(string Name, string Description)
 }
 
 public record UpdateCategoryDTO(string Name, string Description);
+
+public record CategoryResponseDTO(int Id, string Name, string Description);
