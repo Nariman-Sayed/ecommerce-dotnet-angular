@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Ecom.API;
 using Ecom.Core.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -41,10 +42,13 @@ public class ProductsEndpointTests : IClassFixture<WebApplicationFactory<Program
 
                 RemoveAll<IFileProvider>(services);
                 services.AddSingleton<IFileProvider>(new PhysicalFileProvider(_imagesRoot));
+
+                services.AddTestAuthentication();
             });
         });
 
         _client = configuredFactory.CreateClient();
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.RoleHeaderName, AuthPolicies.AdminRole);
     }
 
     [Fact]

@@ -11,11 +11,12 @@ namespace Ecom.API.Controllers;
 public class ErrorController : ControllerBase
 {
     /// <summary>
-    /// Returns a uniform error response for the given HTTP status code.
+    /// Returns a uniform error response for the given HTTP status code,
+    /// including status code pages re-executed from non-GET requests.
     /// </summary>
     /// <param name="statusCode">The HTTP status code that triggered the re-execution.</param>
     /// <returns>An object result carrying the status code and its standard message.</returns>
-    [HttpGet]
+    [AcceptVerbs("GET", "POST", "PUT", "PATCH", "DELETE")]
     public IActionResult Error(int statusCode)
     {
         return new ObjectResult(new ResponseAPI(statusCode));
