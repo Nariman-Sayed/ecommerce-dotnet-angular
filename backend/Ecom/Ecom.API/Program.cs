@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using Ecom.API;
 using Ecom.API.Authentication;
+using Ecom.API.Extensions;
+using Ecom.API.Middleware;
 using Ecom.Application;
 using Ecom.infrastructure;
 using Ecom.infrastructure.Data;
@@ -73,7 +75,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = authority;
         options.Audience = audience;
-        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment()
+            && !builder.Environment.IsEnvironment("Testing");
         options.TokenValidationParameters = new TokenValidationParameters
         {
             NameClaimType = "preferred_username",
@@ -99,9 +102,17 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(AuthPolicies.Admin, policy => policy.RequireRole(AuthPolicies.AdminRole));
 });
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddApiRateLimiting(builder.Configuration);
+builder.Services.AddApiCors(builder.Configuration);
 var app = builder.Build();
+
+// Run before the exception handler so error responses carry the headers too.
+app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseExceptionHandler("/errors/500");
 
 if (app.Environment.IsDevelopment())
 {
@@ -120,9 +131,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors(CorsExtensions.PolicyName);
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+app.MapControllers().RequireRateLimiting(RateLimitingExtensions.FixedWindowPolicy);
 app.Run();
 
 /// <summary>

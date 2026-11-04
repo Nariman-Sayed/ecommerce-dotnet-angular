@@ -35,6 +35,8 @@ public class ProductsEndpointTests : IClassFixture<WebApplicationFactory<Program
         var configuredFactory = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
+            builder.UseSetting("RateLimiting:PermitLimit", "1000");
+            builder.UseSetting("RateLimiting:WindowSeconds", "60");
             builder.ConfigureServices(services =>
             {
                 RemoveAll<DbContextOptions<AppDbContext>>(services);
