@@ -2,6 +2,7 @@ using Ecom.API.DTO;
 using Ecom.API.Helper;
 using Ecom.Application;
 using Ecom.Core.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.API.Controllers;
@@ -60,7 +61,10 @@ public class ProductsController : ControllerBase
     /// <param name="request">The product fields and the uploaded photos.</param>
     /// <returns>A created response carrying the new product and a location pointing to it.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthPolicies.Admin)]
     [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Add([FromForm] AddProductRequest request)
     {
         var product = await _productService.AddAsync(ToCoreAddDto(request), ToImageUploads(request.Photo));
@@ -74,7 +78,10 @@ public class ProductsController : ControllerBase
     /// <param name="request">The new product fields and any replacement photos.</param>
     /// <returns>The updated product, or a not-found response when the product does not exist.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthPolicies.Admin)]
     [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
     {
@@ -91,7 +98,10 @@ public class ProductsController : ControllerBase
     /// <param name="id">The identifier of the product to delete.</param>
     /// <returns>No content when deleted, or a not-found response when the product does not exist.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthPolicies.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ResponseAPI), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {

@@ -1,4 +1,8 @@
-# API Contract (v0.1, verified from my controller source)
+# API Contract (v0.2, verified from my controller source)
+
+Catalogue reads are anonymous. Catalogue writes require a bearer token
+with the `admin` realm role from Keycloak. Requests without a token
+receive 401, and authenticated requests without the role receive 403.
 
 ## Account (/api/account)
 | Method | Route | Auth |
@@ -18,18 +22,18 @@
 |---|---|---|
 | GET | get-all | No |
 | GET | get-by-id/{id} | No |
-| POST | add-category | No (gap) |
-| PUT | update-category | No (gap) |
-| DELETE | delete-category/{id} | No (gap) |
+| POST | add-category | Yes, Admin |
+| PUT | update-category | Yes, Admin |
+| DELETE | delete-category/{id} | Yes, Admin |
 
 ## Products (/api/products)
 | Method | Route | Auth |
 |---|---|---|
 | GET | get-all | No |
 | GET | get-by-id/{id} | No |
-| POST | Add-Product | No (gap) |
-| PUT | Update-Product | No (gap) |
-| DELETE | Delete-Product/{Id} | No (gap) |
+| POST | Add-Product | Yes, Admin |
+| PUT | Update-Product | Yes, Admin |
+| DELETE | Delete-Product/{Id} | Yes, Admin |
 
 ### Catalogue write responses
 

@@ -43,10 +43,11 @@ a product.
 
 ### Admin
 
-Not implemented as of this document's writing, August 2026. Product and
-Category CRUD endpoints currently have no role restriction. When I
-implement this in a later phase, I will update this section to reflect
-the actual state, including the phase and PR where it was added.
+Implemented. The API maps Keycloak realm roles to standard role claims.
+Product and Category create, update, and delete endpoints require the
+Admin policy, which requires the `admin` realm role. Read endpoints stay
+anonymous. Integration tests cover anonymous, wrong-role, and admin
+outcomes without a running Keycloak instance.
 
 ## Business Rules Verified From My Code
 
@@ -59,6 +60,7 @@ the actual state, including the phase and PR where it was added.
 | Basket caching uses Redis | Confirmed in infrastructureRegisteration.cs and CustomerBasketRepositry.cs |
 | Stripe API key is read from configuration, not hardcoded | Confirmed in PaymentService.cs |
 | Stripe webhook does not require user authentication | Expected by design since Stripe calls it externally, but see Security Finding 1 |
+| Product and Category writes require the Admin role | Confirmed: write actions use the Admin policy backed by the Keycloak `admin` realm role; reads stay anonymous |
 
 ## Security Findings From My Own Source Code Audit
 
@@ -66,9 +68,11 @@ the actual state, including the phase and PR where it was added.
    PaymentsController.cs and committed to a public repository. I need to
    move it to configuration or a secrets manager.
 
-2. High. No Admin role exists yet. The Product and Category Add, Update,
-   and Delete endpoints have no authorization attribute, so anyone can
-   currently modify the catalog.
+2. Resolved. The Admin role and policy now exist. Keycloak realm roles
+   are mapped to standard role claims, and the Product and Category Add,
+   Update, and Delete endpoints require the `admin` role. Requests without
+   a token receive 401, and authenticated requests without the role
+   receive 403.
 
 3. High. BasketsController has no authorization. Anyone who knows a
    basket's GUID can currently read, modify, or delete it.
@@ -81,9 +85,6 @@ the actual state, including the phase and PR where it was added.
    whether it belongs in scope needs a decision.
 
 ## Open Decisions
-
-Should I add the Admin role early, during the Product and Category
-phase, or defer it to a dedicated security hardening phase?
 
 Is inventory and stock tracking in scope for my production goal, or
 explicitly out of scope for this project?
