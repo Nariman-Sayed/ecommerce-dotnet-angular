@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Ecom.API;
 using Ecom.API.Authentication;
+using Ecom.API.Swagger;
 using Ecom.Application;
 using Ecom.infrastructure;
 using Ecom.infrastructure.Data;
@@ -52,20 +53,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "oauth2"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
+    options.OperationFilter<AuthorizeOperationFilter>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
