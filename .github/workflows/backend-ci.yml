@@ -34,3 +34,6 @@ jobs:
       - name: Test
         run: dotnet test --no-build --configuration Release
         working-directory: backend/Ecom
+
+      - name: Build API Docker image
+        run: docker build --file backend/Ecom/Ecom.API/Dockerfile --tag ecom-api:ci backend/Ecom
