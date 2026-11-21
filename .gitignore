@@ -32,6 +32,7 @@ Thumbs.db
 
 ## Environment / secrets
 *.env
+.env
 appsettings.Development.json
 !backend/Ecom/Ecom.API/appsettings.Development.json
 appsettings.Local.json

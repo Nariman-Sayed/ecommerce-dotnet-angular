@@ -1,0 +1,22 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+**/*.suo
+
+Ecom.UnitTests/
+Ecom.IntegrationTests/
+
+.git/
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Configuration is supplied through environment variables at run time.
+**/appsettings*.json
+**/appsettings.Local.json
+
+**/*.md
+Ecom.API/Ecom.API.http
