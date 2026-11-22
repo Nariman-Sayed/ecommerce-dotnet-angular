@@ -29,6 +29,9 @@ if (string.IsNullOrWhiteSpace(audience))
         "Authentication__Audience environment variable in other environments.");
 }
 
+var metadataAddress = builder.Configuration["Authentication:MetadataAddress"];
+var migrateOnStartup = builder.Configuration.GetValue<bool>("Database:MigrateOnStartup");
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -61,6 +64,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = authority;
         options.Audience = audience;
+        if (!string.IsNullOrWhiteSpace(metadataAddress))
+            options.MetadataAddress = metadataAddress;
+
         options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -90,6 +96,15 @@ builder.Services.AddAuthorization(options =>
 builder.Services.InfrastructureConfiguration(builder.Configuration);
 builder.Services.AddApplication();
 var app = builder.Build();
+
+if (migrateOnStartup)
+{
+    // Local/demo only: several API instances would race to apply the same migrations.
+    using var scope = app.Services.CreateScope();
+    await DatabaseMigrator.ApplyAsync(
+        scope.ServiceProvider.GetRequiredService<AppDbContext>(),
+        migrateOnStartup);
+}
 
 if (app.Environment.IsDevelopment())
 {

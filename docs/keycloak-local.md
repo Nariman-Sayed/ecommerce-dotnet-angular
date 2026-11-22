@@ -3,8 +3,12 @@
 Start Keycloak from the repository root:
 
 ```bash
+cp .env.example .env
 docker compose up -d keycloak
 ```
+
+Compose parses the whole file, so `.env` must exist even when you start only
+Keycloak.
 
 Keycloak listens on `http://localhost:8080`, and the `ecom` realm is imported on
 first start. The Compose file publishes the port on `127.0.0.1`, so Keycloak is
@@ -30,6 +34,16 @@ Outside Development, the base `appsettings.json` does not contain these values.
 Provide them through configuration or the `Authentication__Authority` and
 `Authentication__Audience` environment variables. Startup fails with a clear
 message when either value is missing.
+
+`Authentication:MetadataAddress` is optional. When it is set, the API keeps the
+public `Authority` for token issuers and browser redirects but fetches the
+discovery document from that address. This is how the API container reaches
+Keycloak as `http://keycloak:8080` while tokens are still issued for
+`http://localhost:8080/realms/ecom`. Leave it unset when the API can reach the
+authority directly.
+
+The full container stack, including the API, is described in
+[docker-local.md](docker-local.md).
 
 ## Getting a token for Swagger
 
